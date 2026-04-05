@@ -1,2 +1,17 @@
-# expense-reconciliation-app
-A Flutter-based mobile application designed to manage shared expenses across multiple users and payment sources.  It allows tracking purchases, assigning responsibility, splitting costs, and generating consolidated financial summaries per user.
+# expense_reconciliation_app
+
+A new Flutter project.
+
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
+- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
