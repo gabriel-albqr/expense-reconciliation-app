@@ -17,7 +17,11 @@ class HomePage extends StatelessWidget {
       icon: Icons.credit_card_outlined,
       routeName: AppRoutes.paymentSources,
     ),
-    _HomeSection(title: 'Compras', icon: Icons.shopping_cart_outlined),
+    _HomeSection(
+      title: 'Compras',
+      icon: Icons.shopping_cart_outlined,
+      routeName: AppRoutes.purchases,
+    ),
     _HomeSection(title: 'Resumo Mensal', icon: Icons.calendar_month_outlined),
   ];
 

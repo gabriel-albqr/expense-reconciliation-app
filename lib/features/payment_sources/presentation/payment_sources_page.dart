@@ -6,10 +6,16 @@ class PaymentSourcesPage extends StatefulWidget {
   const PaymentSourcesPage({
     super.key,
     required this.people,
+    required this.paymentSources,
+    required this.onAddPaymentSource,
+    required this.onRemovePaymentSource,
     required this.onToggleThemeMode,
   });
 
   final List<Person> people;
+  final List<PaymentSource> paymentSources;
+  final void Function(String name, String ownerId) onAddPaymentSource;
+  final ValueChanged<String> onRemovePaymentSource;
   final VoidCallback onToggleThemeMode;
 
   @override
@@ -17,8 +23,6 @@ class PaymentSourcesPage extends StatefulWidget {
 }
 
 class _PaymentSourcesPageState extends State<PaymentSourcesPage> {
-  final List<PaymentSource> _paymentSources = <PaymentSource>[];
-
   Future<void> _showAddPaymentSourceDialog() async {
     var typedName = '';
     var selectedOwnerId = widget.people.isNotEmpty
@@ -95,23 +99,16 @@ class _PaymentSourcesPageState extends State<PaymentSourcesPage> {
       return;
     }
 
-    final paymentSource = PaymentSource(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      ownerId: ownerId,
-    );
+    widget.onAddPaymentSource(name, ownerId);
 
-    setState(() {
-      _paymentSources.add(paymentSource);
-    });
+    setState(() {});
 
     Navigator.of(context).pop();
   }
 
   void _removePaymentSource(String paymentSourceId) {
-    setState(() {
-      _paymentSources.removeWhere((source) => source.id == paymentSourceId);
-    });
+    widget.onRemovePaymentSource(paymentSourceId);
+    setState(() {});
   }
 
   String _ownerNameFor(String ownerId) {
@@ -121,7 +118,7 @@ class _PaymentSourcesPageState extends State<PaymentSourcesPage> {
       }
     }
 
-    return 'Dono não encontrado';
+    return 'Cartão desconhecido';
   }
 
   @override
@@ -141,14 +138,14 @@ class _PaymentSourcesPageState extends State<PaymentSourcesPage> {
           ),
         ],
       ),
-      body: _paymentSources.isEmpty
+      body: widget.paymentSources.isEmpty
           ? const Center(
               child: Text('Nenhuma fonte de pagamento adicionada ainda.'),
             )
           : ListView.builder(
-              itemCount: _paymentSources.length,
+              itemCount: widget.paymentSources.length,
               itemBuilder: (context, index) {
-                final source = _paymentSources[index];
+                final source = widget.paymentSources[index];
                 return ListTile(
                   title: Text(source.name),
                   subtitle: Text(_ownerNameFor(source.ownerId)),

@@ -1,9 +1,12 @@
 import 'package:expense_reconciliation_app/core/navigation/app_routes.dart';
+import 'package:expense_reconciliation_app/core/models/payment_source.dart';
 import 'package:expense_reconciliation_app/core/models/person.dart';
+import 'package:expense_reconciliation_app/core/models/purchase.dart';
 import 'package:expense_reconciliation_app/core/theme/app_theme.dart';
 import 'package:expense_reconciliation_app/core/theme/theme_mode_storage.dart';
 import 'package:expense_reconciliation_app/features/home/presentation/home_page.dart';
 import 'package:expense_reconciliation_app/features/payment_sources/presentation/payment_sources_page.dart';
+import 'package:expense_reconciliation_app/features/purchases/presentation/purchases_page.dart';
 import 'package:expense_reconciliation_app/features/people/presentation/people_page.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +22,8 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
   final ThemeModeStorage _themeModeStorage = ThemeModeStorage();
   ThemeMode _themeMode = ThemeMode.light;
   final List<Person> _people = <Person>[];
+  final List<PaymentSource> _paymentSources = <PaymentSource>[];
+  final List<Purchase> _purchases = <Purchase>[];
 
   @override
   void initState() {
@@ -63,6 +68,37 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
   void _removePerson(String personId) {
     setState(() {
       _people.removeWhere((person) => person.id == personId);
+      _paymentSources.removeWhere((source) => source.ownerId == personId);
+    });
+  }
+
+  void _addPaymentSource(String name, String ownerId) {
+    setState(() {
+      _paymentSources.add(
+        PaymentSource(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: name,
+          ownerId: ownerId,
+        ),
+      );
+    });
+  }
+
+  void _removePaymentSource(String paymentSourceId) {
+    setState(() {
+      _paymentSources.removeWhere((source) => source.id == paymentSourceId);
+    });
+  }
+
+  void _addPurchase(Purchase purchase) {
+    setState(() {
+      _purchases.add(purchase);
+    });
+  }
+
+  void _removePurchase(String purchaseId) {
+    setState(() {
+      _purchases.removeWhere((purchase) => purchase.id == purchaseId);
     });
   }
 
@@ -118,6 +154,24 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
           return MaterialPageRoute<void>(
             builder: (_) => PaymentSourcesPage(
               people: _people,
+              paymentSources: _paymentSources,
+              onAddPaymentSource: _addPaymentSource,
+              onRemovePaymentSource: _removePaymentSource,
+              onToggleThemeMode: () {
+                _toggleThemeMode();
+              },
+            ),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == AppRoutes.purchases) {
+          return MaterialPageRoute<void>(
+            builder: (_) => PurchasesPage(
+              purchases: _purchases,
+              paymentSources: _paymentSources,
+              onAddPurchase: _addPurchase,
+              onRemovePurchase: _removePurchase,
               onToggleThemeMode: () {
                 _toggleThemeMode();
               },
