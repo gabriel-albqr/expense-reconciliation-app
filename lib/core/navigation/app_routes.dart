@@ -1,4 +1,5 @@
 abstract final class AppRoutes {
   static const home = '/';
+  static const people = '/people';
   static const section = '/section';
 }

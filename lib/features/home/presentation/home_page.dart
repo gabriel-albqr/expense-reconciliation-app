@@ -7,7 +7,11 @@ class HomePage extends StatelessWidget {
   final VoidCallback onToggleThemeMode;
 
   static const _sections = <_HomeSection>[
-    _HomeSection(title: 'Pessoas', icon: Icons.people_alt_outlined),
+    _HomeSection(
+      title: 'Pessoas',
+      icon: Icons.people_alt_outlined,
+      routeName: AppRoutes.people,
+    ),
     _HomeSection(title: 'Cartões', icon: Icons.credit_card_outlined),
     _HomeSection(title: 'Compras', icon: Icons.shopping_cart_outlined),
     _HomeSection(title: 'Resumo Mensal', icon: Icons.calendar_month_outlined),
@@ -55,9 +59,13 @@ class HomePage extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(14),
                       onTap: () {
+                        final routeName =
+                            section.routeName ?? AppRoutes.section;
                         Navigator.of(context).pushNamed(
-                          AppRoutes.section,
-                          arguments: section.title,
+                          routeName,
+                          arguments: section.routeName == null
+                              ? section.title
+                              : null,
                         );
                       },
                       child: Padding(
@@ -125,8 +133,9 @@ class SectionPlaceholderPage extends StatelessWidget {
 }
 
 class _HomeSection {
-  const _HomeSection({required this.title, required this.icon});
+  const _HomeSection({required this.title, required this.icon, this.routeName});
 
   final String title;
   final IconData icon;
+  final String? routeName;
 }
