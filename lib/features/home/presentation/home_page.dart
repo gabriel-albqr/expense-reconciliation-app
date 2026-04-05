@@ -2,7 +2,9 @@ import 'package:expense_reconciliation_app/core/navigation/app_routes.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.onToggleThemeMode});
+
+  final VoidCallback onToggleThemeMode;
 
   static const _sections = <_HomeSection>[
     _HomeSection(title: 'Pessoas', icon: Icons.people_alt_outlined),
@@ -13,8 +15,21 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Controle de Despesas')),
+      appBar: AppBar(
+        title: const Text('Controle de Despesas'),
+        actions: [
+          IconButton(
+            onPressed: onToggleThemeMode,
+            tooltip: isDarkMode ? 'Ativar tema claro' : 'Ativar tema escuro',
+            icon: Icon(
+              isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+            ),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -72,14 +87,32 @@ class HomePage extends StatelessWidget {
 }
 
 class SectionPlaceholderPage extends StatelessWidget {
-  const SectionPlaceholderPage({super.key, required this.title});
+  const SectionPlaceholderPage({
+    super.key,
+    required this.title,
+    required this.onToggleThemeMode,
+  });
 
   final String title;
+  final VoidCallback onToggleThemeMode;
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+            onPressed: onToggleThemeMode,
+            tooltip: isDarkMode ? 'Ativar tema claro' : 'Ativar tema escuro',
+            icon: Icon(
+              isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+            ),
+          ),
+        ],
+      ),
       body: Center(
         child: Text(
           'Tela de $title (placeholder)',

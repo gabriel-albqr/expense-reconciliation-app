@@ -1,10 +1,49 @@
 import 'package:expense_reconciliation_app/core/navigation/app_routes.dart';
 import 'package:expense_reconciliation_app/core/theme/app_theme.dart';
+import 'package:expense_reconciliation_app/core/theme/theme_mode_storage.dart';
 import 'package:expense_reconciliation_app/features/home/presentation/home_page.dart';
 import 'package:flutter/material.dart';
 
-class ExpenseReconciliationApp extends StatelessWidget {
+class ExpenseReconciliationApp extends StatefulWidget {
   const ExpenseReconciliationApp({super.key});
+
+  @override
+  State<ExpenseReconciliationApp> createState() =>
+      _ExpenseReconciliationAppState();
+}
+
+class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
+  final ThemeModeStorage _themeModeStorage = ThemeModeStorage();
+  ThemeMode _themeMode = ThemeMode.light;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThemeMode();
+  }
+
+  Future<void> _loadThemeMode() async {
+    final savedMode = await _themeModeStorage.load();
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _themeMode = savedMode;
+    });
+  }
+
+  Future<void> _toggleThemeMode() async {
+    final nextMode = _themeMode == ThemeMode.light
+        ? ThemeMode.dark
+        : ThemeMode.light;
+
+    setState(() {
+      _themeMode = nextMode;
+    });
+
+    await _themeModeStorage.save(nextMode);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,11 +51,17 @@ class ExpenseReconciliationApp extends StatelessWidget {
       title: 'Controle de Despesas',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: _themeMode,
       initialRoute: AppRoutes.home,
       onGenerateRoute: (settings) {
         if (settings.name == AppRoutes.home) {
           return MaterialPageRoute<void>(
-            builder: (_) => const HomePage(),
+            builder: (_) => HomePage(
+              onToggleThemeMode: () {
+                _toggleThemeMode();
+              },
+            ),
             settings: settings,
           );
         }
@@ -24,13 +69,22 @@ class ExpenseReconciliationApp extends StatelessWidget {
         if (settings.name == AppRoutes.section) {
           final sectionTitle = settings.arguments as String? ?? 'Seção';
           return MaterialPageRoute<void>(
-            builder: (_) => SectionPlaceholderPage(title: sectionTitle),
+            builder: (_) => SectionPlaceholderPage(
+              title: sectionTitle,
+              onToggleThemeMode: () {
+                _toggleThemeMode();
+              },
+            ),
             settings: settings,
           );
         }
 
         return MaterialPageRoute<void>(
-          builder: (_) => const HomePage(),
+          builder: (_) => HomePage(
+            onToggleThemeMode: () {
+              _toggleThemeMode();
+            },
+          ),
           settings: settings,
         );
       },
