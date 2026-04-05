@@ -9,6 +9,7 @@ import 'package:expense_reconciliation_app/features/home/presentation/home_page.
 import 'package:expense_reconciliation_app/features/payment_sources/presentation/payment_sources_page.dart';
 import 'package:expense_reconciliation_app/features/purchases/presentation/purchases_page.dart';
 import 'package:expense_reconciliation_app/features/people/presentation/people_page.dart';
+import 'package:expense_reconciliation_app/features/settlement/presentation/settlement_page.dart';
 import 'package:expense_reconciliation_app/features/summary/presentation/summary_page.dart';
 import 'package:flutter/material.dart';
 
@@ -192,6 +193,21 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
           return MaterialPageRoute<void>(
             builder: (_) => SummaryPage(
               people: _people,
+              purchaseSplits: _purchaseSplits,
+              onToggleThemeMode: () {
+                _toggleThemeMode();
+              },
+            ),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == AppRoutes.settlement) {
+          return MaterialPageRoute<void>(
+            builder: (_) => SettlementPage(
+              people: _people,
+              purchases: _purchases,
+              paymentSources: _paymentSources,
               purchaseSplits: _purchaseSplits,
               onToggleThemeMode: () {
                 _toggleThemeMode();

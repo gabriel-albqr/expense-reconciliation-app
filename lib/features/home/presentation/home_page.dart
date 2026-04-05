@@ -27,6 +27,11 @@ class HomePage extends StatelessWidget {
       icon: Icons.calendar_month_outlined,
       routeName: AppRoutes.summary,
     ),
+    _HomeSection(
+      title: 'Liquidação',
+      icon: Icons.account_balance_wallet_outlined,
+      routeName: AppRoutes.settlement,
+    ),
   ];
 
   @override
