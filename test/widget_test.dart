@@ -363,5 +363,7 @@ void main() {
     expect(find.textContaining('Pago: R\$ 0,00'), findsOneWidget);
     expect(find.textContaining('Saldo: +R\$ 50,00'), findsOneWidget);
     expect(find.textContaining('Saldo: -R\$ 50,00'), findsOneWidget);
+    expect(find.text('Quem deve para quem'), findsOneWidget);
+    expect(find.text('Bruno deve R\$ 50,00 para Ana'), findsOneWidget);
   });
 }
