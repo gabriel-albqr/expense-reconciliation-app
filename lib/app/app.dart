@@ -1,4 +1,5 @@
 import 'package:expense_reconciliation_app/core/navigation/app_routes.dart';
+import 'package:expense_reconciliation_app/core/database/database_helper.dart';
 import 'package:expense_reconciliation_app/core/models/payment_source.dart';
 import 'package:expense_reconciliation_app/core/models/person.dart';
 import 'package:expense_reconciliation_app/core/models/purchase.dart';
@@ -22,6 +23,7 @@ class ExpenseReconciliationApp extends StatefulWidget {
 }
 
 class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
+  final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
   final ThemeModeStorage _themeModeStorage = ThemeModeStorage();
   ThemeMode _themeMode = ThemeMode.light;
   final List<Person> _people = <Person>[];
@@ -33,6 +35,7 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
   void initState() {
     super.initState();
     _loadThemeMode();
+    _loadStoredData();
   }
 
   Future<void> _loadThemeMode() async {
@@ -58,55 +61,109 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
     await _themeModeStorage.save(nextMode);
   }
 
-  void _addPerson(String name) {
+  Future<void> _loadStoredData() async {
+    if (!_databaseHelper.persistenceEnabled) {
+      return;
+    }
+
+    await _databaseHelper.database;
+
+    final people = await _databaseHelper.getPeople();
+    final paymentSources = await _databaseHelper.getPaymentSources();
+    final purchases = await _databaseHelper.getPurchases();
+    final purchaseSplits = await _databaseHelper.getPurchaseSplits();
+
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
-      _people.add(
-        Person(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: name,
-        ),
-      );
+      _people
+        ..clear()
+        ..addAll(people);
+      _paymentSources
+        ..clear()
+        ..addAll(paymentSources);
+      _purchases
+        ..clear()
+        ..addAll(purchases);
+      _purchaseSplits
+        ..clear()
+        ..addAll(purchaseSplits);
     });
   }
 
-  void _removePerson(String personId) {
+  Future<void> _addPerson(String name) async {
+    final person = Person(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name,
+    );
+
+    setState(() {
+      _people.add(person);
+    });
+
+    await _databaseHelper.insertPerson(person);
+  }
+
+  Future<void> _removePerson(String personId) async {
     setState(() {
       _people.removeWhere((person) => person.id == personId);
       _paymentSources.removeWhere((source) => source.ownerId == personId);
       _purchaseSplits.removeWhere((split) => split.personId == personId);
     });
+
+    await Future.wait([
+      _databaseHelper.deletePerson(personId),
+      _databaseHelper.deletePaymentSourcesByOwnerId(personId),
+      _databaseHelper.deletePurchaseSplitsByPersonId(personId),
+    ]);
   }
 
-  void _addPaymentSource(String name, String ownerId) {
+  Future<void> _addPaymentSource(String name, String ownerId) async {
+    final paymentSource = PaymentSource(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name,
+      ownerId: ownerId,
+    );
+
     setState(() {
-      _paymentSources.add(
-        PaymentSource(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: name,
-          ownerId: ownerId,
-        ),
-      );
+      _paymentSources.add(paymentSource);
     });
+
+    await _databaseHelper.insertPaymentSource(paymentSource);
   }
 
-  void _removePaymentSource(String paymentSourceId) {
+  Future<void> _removePaymentSource(String paymentSourceId) async {
     setState(() {
       _paymentSources.removeWhere((source) => source.id == paymentSourceId);
     });
+
+    await _databaseHelper.deletePaymentSource(paymentSourceId);
   }
 
-  void _addPurchase(Purchase purchase, List<PurchaseSplit> splits) {
+  Future<void> _addPurchase(
+    Purchase purchase,
+    List<PurchaseSplit> splits,
+  ) async {
     setState(() {
       _purchases.add(purchase);
       _purchaseSplits.addAll(splits);
     });
+
+    await _databaseHelper.insertPurchase(purchase);
+    for (final split in splits) {
+      await _databaseHelper.insertPurchaseSplit(split);
+    }
   }
 
-  void _removePurchase(String purchaseId) {
+  Future<void> _removePurchase(String purchaseId) async {
     setState(() {
       _purchases.removeWhere((purchase) => purchase.id == purchaseId);
       _purchaseSplits.removeWhere((split) => split.purchaseId == purchaseId);
     });
+
+    await _databaseHelper.deletePurchase(purchaseId);
   }
 
   @override

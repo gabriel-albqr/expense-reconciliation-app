@@ -2,9 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:expense_reconciliation_app/core/database/database_helper.dart';
 import 'package:expense_reconciliation_app/app/app.dart';
 
 void main() {
+  setUp(() async {
+    DatabaseHelper.instance.persistenceEnabled = false;
+    await DatabaseHelper.instance.reset();
+  });
+
+  tearDown(() async {
+    await DatabaseHelper.instance.close();
+    DatabaseHelper.instance.persistenceEnabled = true;
+  });
+
   testWidgets('Home exibe secoes principais', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({});
 
