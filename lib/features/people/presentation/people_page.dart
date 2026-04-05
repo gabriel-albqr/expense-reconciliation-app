@@ -2,8 +2,17 @@ import 'package:expense_reconciliation_app/core/models/person.dart';
 import 'package:flutter/material.dart';
 
 class PeoplePage extends StatefulWidget {
-  const PeoplePage({super.key, required this.onToggleThemeMode});
+  const PeoplePage({
+    super.key,
+    required this.people,
+    required this.onAddPerson,
+    required this.onRemovePerson,
+    required this.onToggleThemeMode,
+  });
 
+  final List<Person> people;
+  final ValueChanged<String> onAddPerson;
+  final ValueChanged<String> onRemovePerson;
   final VoidCallback onToggleThemeMode;
 
   @override
@@ -11,8 +20,6 @@ class PeoplePage extends StatefulWidget {
 }
 
 class _PeoplePageState extends State<PeoplePage> {
-  final List<Person> _people = <Person>[];
-
   Future<void> _showAddPersonDialog() async {
     var typedName = '';
 
@@ -53,22 +60,16 @@ class _PeoplePageState extends State<PeoplePage> {
       return;
     }
 
-    final person = Person(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-    );
+    widget.onAddPerson(name);
 
-    setState(() {
-      _people.add(person);
-    });
+    setState(() {});
 
     Navigator.of(context).pop();
   }
 
   void _removePerson(String personId) {
-    setState(() {
-      _people.removeWhere((person) => person.id == personId);
-    });
+    widget.onRemovePerson(personId);
+    setState(() {});
   }
 
   @override
@@ -88,12 +89,12 @@ class _PeoplePageState extends State<PeoplePage> {
           ),
         ],
       ),
-      body: _people.isEmpty
+      body: widget.people.isEmpty
           ? const Center(child: Text('Nenhuma pessoa adicionada ainda.'))
           : ListView.builder(
-              itemCount: _people.length,
+              itemCount: widget.people.length,
               itemBuilder: (context, index) {
-                final person = _people[index];
+                final person = widget.people[index];
                 return ListTile(
                   title: Text(person.name),
                   trailing: IconButton(

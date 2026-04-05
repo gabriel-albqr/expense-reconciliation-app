@@ -6,13 +6,17 @@ class HomePage extends StatelessWidget {
 
   final VoidCallback onToggleThemeMode;
 
-  static const _sections = <_HomeSection>[
+  static final _sections = <_HomeSection>[
     _HomeSection(
       title: 'Pessoas',
       icon: Icons.people_alt_outlined,
       routeName: AppRoutes.people,
     ),
-    _HomeSection(title: 'Cartões', icon: Icons.credit_card_outlined),
+    _HomeSection(
+      title: 'Cartões',
+      icon: Icons.credit_card_outlined,
+      routeName: AppRoutes.paymentSources,
+    ),
     _HomeSection(title: 'Compras', icon: Icons.shopping_cart_outlined),
     _HomeSection(title: 'Resumo Mensal', icon: Icons.calendar_month_outlined),
   ];

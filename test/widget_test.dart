@@ -52,4 +52,53 @@ void main() {
     expect(find.text('Ana'), findsNothing);
     expect(find.text('Nenhuma pessoa adicionada ainda.'), findsOneWidget);
   });
+
+  testWidgets('Cartoes usa pessoas cadastradas para vincular dono', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+
+    await tester.pumpWidget(const ExpenseReconciliationApp());
+
+    await tester.tap(find.text('Pessoas'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'Ana');
+    await tester.tap(find.text('Adicionar'));
+    await tester.pumpAndSettle();
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Cartões'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Fontes de Pagamento'), findsOneWidget);
+    expect(
+      find.text('Nenhuma fonte de pagamento adicionada ainda.'),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'Nubank');
+    await tester.tap(find.text('Adicionar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nubank'), findsOneWidget);
+    expect(find.text('Ana'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nubank'), findsNothing);
+    expect(
+      find.text('Nenhuma fonte de pagamento adicionada ainda.'),
+      findsOneWidget,
+    );
+  });
 }

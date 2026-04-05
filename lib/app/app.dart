@@ -1,7 +1,9 @@
 import 'package:expense_reconciliation_app/core/navigation/app_routes.dart';
+import 'package:expense_reconciliation_app/core/models/person.dart';
 import 'package:expense_reconciliation_app/core/theme/app_theme.dart';
 import 'package:expense_reconciliation_app/core/theme/theme_mode_storage.dart';
 import 'package:expense_reconciliation_app/features/home/presentation/home_page.dart';
+import 'package:expense_reconciliation_app/features/payment_sources/presentation/payment_sources_page.dart';
 import 'package:expense_reconciliation_app/features/people/presentation/people_page.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +18,7 @@ class ExpenseReconciliationApp extends StatefulWidget {
 class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
   final ThemeModeStorage _themeModeStorage = ThemeModeStorage();
   ThemeMode _themeMode = ThemeMode.light;
+  final List<Person> _people = <Person>[];
 
   @override
   void initState() {
@@ -44,6 +47,23 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
     });
 
     await _themeModeStorage.save(nextMode);
+  }
+
+  void _addPerson(String name) {
+    setState(() {
+      _people.add(
+        Person(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: name,
+        ),
+      );
+    });
+  }
+
+  void _removePerson(String personId) {
+    setState(() {
+      _people.removeWhere((person) => person.id == personId);
+    });
   }
 
   @override
@@ -83,6 +103,21 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
         if (settings.name == AppRoutes.people) {
           return MaterialPageRoute<void>(
             builder: (_) => PeoplePage(
+              people: _people,
+              onAddPerson: _addPerson,
+              onRemovePerson: _removePerson,
+              onToggleThemeMode: () {
+                _toggleThemeMode();
+              },
+            ),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == AppRoutes.paymentSources) {
+          return MaterialPageRoute<void>(
+            builder: (_) => PaymentSourcesPage(
+              people: _people,
               onToggleThemeMode: () {
                 _toggleThemeMode();
               },
