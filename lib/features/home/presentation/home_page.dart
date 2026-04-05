@@ -22,7 +22,11 @@ class HomePage extends StatelessWidget {
       icon: Icons.shopping_cart_outlined,
       routeName: AppRoutes.purchases,
     ),
-    _HomeSection(title: 'Resumo Mensal', icon: Icons.calendar_month_outlined),
+    _HomeSection(
+      title: 'Resumo',
+      icon: Icons.calendar_month_outlined,
+      routeName: AppRoutes.summary,
+    ),
   ];
 
   @override

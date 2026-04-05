@@ -9,6 +9,7 @@ import 'package:expense_reconciliation_app/features/home/presentation/home_page.
 import 'package:expense_reconciliation_app/features/payment_sources/presentation/payment_sources_page.dart';
 import 'package:expense_reconciliation_app/features/purchases/presentation/purchases_page.dart';
 import 'package:expense_reconciliation_app/features/people/presentation/people_page.dart';
+import 'package:expense_reconciliation_app/features/summary/presentation/summary_page.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseReconciliationApp extends StatefulWidget {
@@ -179,6 +180,19 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
               purchaseSplits: _purchaseSplits,
               onAddPurchase: _addPurchase,
               onRemovePurchase: _removePurchase,
+              onToggleThemeMode: () {
+                _toggleThemeMode();
+              },
+            ),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == AppRoutes.summary) {
+          return MaterialPageRoute<void>(
+            builder: (_) => SummaryPage(
+              people: _people,
+              purchaseSplits: _purchaseSplits,
               onToggleThemeMode: () {
                 _toggleThemeMode();
               },

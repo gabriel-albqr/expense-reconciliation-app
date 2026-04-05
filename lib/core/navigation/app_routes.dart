@@ -3,5 +3,6 @@ abstract final class AppRoutes {
   static const people = '/people';
   static const paymentSources = '/payment-sources';
   static const purchases = '/purchases';
+  static const summary = '/summary';
   static const section = '/section';
 }
