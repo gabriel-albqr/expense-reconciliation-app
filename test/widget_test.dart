@@ -154,11 +154,73 @@ void main() {
     expect(find.text('Almoço'), findsOneWidget);
     expect(find.textContaining('R\$ 25,50'), findsOneWidget);
     expect(find.textContaining('Nubank'), findsOneWidget);
+    expect(find.textContaining('Individual'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.delete_outline));
     await tester.pumpAndSettle();
 
     expect(find.text('Almoço'), findsNothing);
     expect(find.text('Nenhuma compra adicionada ainda.'), findsOneWidget);
+  });
+
+  testWidgets('Compra compartilhada indica tipo compartilhada', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+
+    await tester.pumpWidget(const ExpenseReconciliationApp());
+
+    await tester.tap(find.text('Pessoas'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Ana');
+    await tester.tap(find.text('Adicionar'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Bruno');
+    await tester.tap(find.text('Adicionar'));
+    await tester.pumpAndSettle();
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Cartões'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'C6');
+    await tester.tap(find.text('Adicionar'));
+    await tester.pumpAndSettle();
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(GridView), const Offset(0, -250));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Compras'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).at(0), 'Mercado');
+    await tester.enterText(find.byType(TextField).at(1), '100');
+    await tester.tap(find.text('Compartilhada'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(CheckboxListTile).at(0));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(CheckboxListTile).at(1));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Adicionar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mercado'), findsOneWidget);
+    expect(find.textContaining('Compartilhada'), findsOneWidget);
   });
 }

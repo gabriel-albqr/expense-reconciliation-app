@@ -2,6 +2,7 @@ import 'package:expense_reconciliation_app/core/navigation/app_routes.dart';
 import 'package:expense_reconciliation_app/core/models/payment_source.dart';
 import 'package:expense_reconciliation_app/core/models/person.dart';
 import 'package:expense_reconciliation_app/core/models/purchase.dart';
+import 'package:expense_reconciliation_app/core/models/purchase_split.dart';
 import 'package:expense_reconciliation_app/core/theme/app_theme.dart';
 import 'package:expense_reconciliation_app/core/theme/theme_mode_storage.dart';
 import 'package:expense_reconciliation_app/features/home/presentation/home_page.dart';
@@ -24,6 +25,7 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
   final List<Person> _people = <Person>[];
   final List<PaymentSource> _paymentSources = <PaymentSource>[];
   final List<Purchase> _purchases = <Purchase>[];
+  final List<PurchaseSplit> _purchaseSplits = <PurchaseSplit>[];
 
   @override
   void initState() {
@@ -69,6 +71,7 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
     setState(() {
       _people.removeWhere((person) => person.id == personId);
       _paymentSources.removeWhere((source) => source.ownerId == personId);
+      _purchaseSplits.removeWhere((split) => split.personId == personId);
     });
   }
 
@@ -90,15 +93,17 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
     });
   }
 
-  void _addPurchase(Purchase purchase) {
+  void _addPurchase(Purchase purchase, List<PurchaseSplit> splits) {
     setState(() {
       _purchases.add(purchase);
+      _purchaseSplits.addAll(splits);
     });
   }
 
   void _removePurchase(String purchaseId) {
     setState(() {
       _purchases.removeWhere((purchase) => purchase.id == purchaseId);
+      _purchaseSplits.removeWhere((split) => split.purchaseId == purchaseId);
     });
   }
 
@@ -169,7 +174,9 @@ class _ExpenseReconciliationAppState extends State<ExpenseReconciliationApp> {
           return MaterialPageRoute<void>(
             builder: (_) => PurchasesPage(
               purchases: _purchases,
+              people: _people,
               paymentSources: _paymentSources,
+              purchaseSplits: _purchaseSplits,
               onAddPurchase: _addPurchase,
               onRemovePurchase: _removePurchase,
               onToggleThemeMode: () {
